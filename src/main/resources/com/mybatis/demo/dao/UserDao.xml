@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 映射配置文件的 mapper 标签的 namespace 属性取值必须是 dao 接口的全限定类名 -->
+<mapper namespace="com.mybatis.demo.dao.UserDao">
+    <!-- 配置查询所有 -->
+    <!-- id 要写 namespace 对应接口中的方法名称，调用方法就相当于调用下列对应的 sql 语句 -->
+    <!-- sql 语句的执行结果集会被封装到 resultType 当中 -->
+    <select id="findAll" resultType="com.mybatis.demo.domain.User">
+        select * from user;
+    </select>
+</mapper>
