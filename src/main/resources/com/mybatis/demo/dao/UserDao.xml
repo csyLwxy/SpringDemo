@@ -11,4 +11,12 @@
     <select id="findAll" resultType="com.mybatis.demo.domain.User">
         select * from user;
     </select>
+    <!-- 插入新用户 -->
+    <insert id="addUser" parameterType="com.mybatis.demo.domain.User">
+        insert into user(username,address,sex,birthday) values(#{username}, #{address}, #{sex}, #{birthday});
+    </insert>
+    <!-- 更新用户 -->
+    <update id="updateUserBirthday" parameterType="com.mybatis.demo.domain.User">
+        update user set birthday = #{birthday} where username = #{username};
+    </update>
 </mapper>
