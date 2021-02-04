@@ -1,9 +1,7 @@
 package com.mybatis.demo.dao;
 
 import com.mybatis.demo.domain.User;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
