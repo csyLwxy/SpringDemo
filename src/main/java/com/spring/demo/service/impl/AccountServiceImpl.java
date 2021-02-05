@@ -7,6 +7,7 @@ import com.spring.demo.service.AccountService;
  * @author wxy
  */
 public class AccountServiceImpl implements AccountService {
+
     private AccountDao accountDao ;
 
     public AccountServiceImpl(){
@@ -16,5 +17,13 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void saveAccount(){
         accountDao.saveAccount();
+    }
+
+    public AccountDao getAccountDao() {
+        return accountDao;
+    }
+
+    public void setAccountDao(AccountDao accountDao) {
+        this.accountDao = accountDao;
     }
 }

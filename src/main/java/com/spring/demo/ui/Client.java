@@ -36,7 +36,7 @@ public class Client {
 
         System.out.println(as);
         System.out.println(accountDao);
-        // as.saveAccount();
+        as.saveAccount();
 
 
        // --------BeanFactory----------

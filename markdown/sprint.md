@@ -142,7 +142,93 @@
 - props
 - prop
 
-## spring 中基于注解的 IOC 的 ioc 的案例
+## spring 中基于注解的 IOC 以及的 ioc 的案例
+
+### spring 中 IOC 的常用注解
+
+#### 有关配置的注解
+
+- @Configuration
+  - 作用：指定当前类是一个配置类
+- @ComponentScan
+  - 作用：用于通过注解指定 spring 在创建容器时要扫描的包
+  - 属性：
+    - value：用于指定创建容器时要扫描的包
+    - basePackages：同 value
+- @Bean
+  - 作用：用于把当前方法的返回值作为 bean 对象存入 spring 的 IOC 容器中
+  - 属性：
+    - name：用于指定 bean 的 id，默认值是当前方法的名称
+  - 细节：当我们使用注解配置方法是使，如果方法有参数，spring 框架会去容器中查找有没有可用的 bean 对象。查找的方法和 AutoWired 相同
+- @Import
+  - 作用：用于导入其他配置类
+    - 属性
+      - value：用于指定待导入配置类的字节码
+- @PropertySource
+  - 作用：用于加载 .properties 文件中的配置
+  - 属性：
+    - value：指定文件的名称和路径
+    - 关键字：classpath，表示类路径下
+
+#### 资源管理
+
+- @Component
+  - 作用：用于把当前类对象存入 spring 容器中
+  - 属性：
+    - value：用于指定 bean 的 id。当我们不写时，默认值为当前类名，且首字母小写。
+- @Controller：表现层
+- @Service：业务层
+- @Repository：持久层
+  - 以上三个注解的作用和属性与 Component 相同
+  - 他们三个是 spring 框架为我们提供明确的三层框架的使用的注解，使我们的三层对象更加清晰
+
+#### 注入数据
+
+- @AutoWired
+  - 作用：自动按照类型注入。
+    - 只要容器中有唯一的一个 bean 对象类型和要注入的变量类型匹配就可以注入成功
+    - 如果 IOC 容器中没有任何 bean 类型和要注入的变量类型匹配，则报错
+    - 如果 IOC 容器中有多个 bean 类型匹配时，实现根据 type 查找，然后根据 name 查找对应的 id，如果找不到对应的 id，则报错
+  - 出现的位置：可以时变量上，也可以是方法上。
+  - 细节：
+    - 在使用注解注入时，set 方法就不是必须的了
+- @Qualifier
+  - 作用：在按照类型注入的基础之上，再按照名称注入。他在给类成员注入时不能单独使用，但在给方法参数注入时可以单独使用。
+  - 属性：
+    - value：用于指定注入 bean 的 id
+- @Resource
+  - 作用：直接按照 bean 的 id 注入，可以单独使用
+  - 属性： - name：用于指定 bean 的 id，当只有一个 bean 时，可以不指定
+
+> 以上三种注入都只能注入其他 bean 类型的数据，而基本类型和 String 类型无法使用上述注解
+
+- @Value
+  - 作用：用于注入基本类型和 String 类型的数据
+  - 属性： - value：用于指定数据的值，可以使用 spring 中的 SpEL 表达式
+
+> 集合类型的注入只能通过 XML 实现
+
+#### 用于改变作用范围
+
+- @Scope
+  - 作用：用于指定 bean 的作用范围
+  - 属性：
+    - value：指定范围的取值，默认 singleton
+
+#### 用于改变生命周期
+
+- @PreDestroy
+  - 作用：用于指定销毁方法
+- @PostConstruct
+  - 作用：用于指定初始化方法
+
+## Spring 整合 JUnit
+
+1. 使用 @RunWith 注解替换原有运行器
+   - @RunWith(SpringJUnit4ClassRunner.class)
+2. 使用 @ContextConfiguration 指定 spring 配置文件的位置
+   - @ContextConfiguration(locations= {"classpath:bean.xml"})
+3. 使用 @Autowired 给测试类中的变量注入数据
 
 ## spring 中的 aop 和基于 XML 以及注解的 AOP 配置
 
