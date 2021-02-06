@@ -230,6 +230,162 @@
    - @ContextConfiguration(locations= {"classpath:bean.xml"})
 3. 使用 @Autowired 给测试类中的变量注入数据
 
-## spring 中的 aop 和基于 XML 以及注解的 AOP 配置
+## spring 中的 AOP
+
+### AOP 概述
+
+> AOP：全称是 Aspect Oriented Programming 即：面向切面编程。
+
+> 简单的说它就是把我们程序重复的代码抽取出来，在需要执行的时候，使用动态代理的技术，在不修改源码的基础上，对我们的已有方法进行增强。
+
+### AOP 的实现方式
+
+使用动态代理技术
+
+#### 动态代理
+
+- 特点：字节码随用随创建，随用随加载。
+- 作用：不修改源码的基础上对方法增强
+- 分类
+  - 基于接口的动态代理
+    - 提供者：JDK 官方的 Proxy 类。
+    - 要求：被代理类最少实现一个接口。
+  - 基于子类的动态代理
+    - 提供者：第三方的 CGLib，如果报 asmxxxx 异常，需要导入 asm.jar。
+    - 要求：被代理类不能用 final 修饰的类（最终类）。
+
+### AOP 的作用及优势
+
+- 作用：
+  - 在程序运行期间，不修改源码对已有方法进行增强。
+- 优势：
+  - 减少重复代码
+  - 提高开发效率
+  - 维护方便
+
+### spring 中的 AOP 相关术语
+
+- Joinpoint (连接点):
+  - 所谓连接点是指那些被拦截到的点。在 spring 中,这些点指的是方法,因为 spring 只支持方法类型的连接点。
+- Pointcut (切入点):
+  - 所谓切入点是指我们要对哪些 Joinpoint 进行拦截的定义。
+- Advice (通知/增强):
+  - 所谓通知是指拦截到 Joinpoint 之后所要做的事情就是通知。
+  - 通知的类型：前置通知,后置通知,异常通知,最终通知,环绕通知。
+- Introduction (引介):
+  - 引介是一种特殊的通知在不修改类代码的前提下, Introduction 可以在运行期为类动态地添加一些方法或 Field。
+- Target (目标对象):
+  - 代理的目标对象。
+- Weaving (织入):
+  - 是指把增强应用到目标对象来创建新的代理对象的过程。
+  - spring 采用动态代理织入，而 AspectJ 采用编译期织入和类装载期织入。
+- Proxy (代理):
+  - 一个类被 AOP 织入增强后，就产生一个结果代理类。
+- Aspect (切面):
+  - 是切入点和通知（引介）的结合。
+
+### spring 中基于 XML 和注解的 AOP 配置
+
+#### spring 中基于 XML 的 AOP 配置步骤
+
+1. 把通知 bean 交给 spring 管理
+2. 使用 aop:config 标签表明开始 AOP 的配置
+3. 使用 aop:aspect 标签表明配置切面
+   - id 属性：给切面提供的唯一标识
+   - ref 属性：指定通知类 bean 的 id
+4. 在 aop:asprct 标签的内部使用对应标签来配置通知的类型
+   - aop:before —— <aop:before method="beginTransaction" pointcut-ref="pt1"/>
+     - 作用：用于配置前置通知。指定增强的方法在切入点方法之前执行
+     - 执行时间点：切入点方法执行之前执行
+   - aop:after-returning —— <aop:after-returning method="commit" pointcut-ref="pt1"/>
+     - 作用：用于配置后置通知
+     - 执行时间点：切入点方法正常执行之后。它和异常通知只能有一个执行
+   - aop:after-throwing —— <aop:after-throwing method="rollback" pointcut-ref="pt1"/>
+     - 作用：用于配置后置通知
+     - 执行时间点：切入点方法执行产生异常后执行。它和后置通知只能执行一个
+   - aop:after —— <aop:after method="release" pointcut-ref="pt1"/>
+     - 作用：用于配置后置通知
+     - 执行时间点：无论切入点方法执行时是否有异常，它都会在其后面执行。
+     - 四个标签的共同属性：
+       - method：用于指定通知类中的增强方法名称
+       - poinitcut：用于指定切入点表达式
+       - ponitcut-ref：用于指定切入点的表达式的引用
+
+##### 环绕通知
+
+#### 切入点表达式说明
+
+execution:匹配方法的执行(常用)
+
+execution(表达式)
+
+表达式语法：execution([修饰符] 返回值类型 包名.类名.方法名(参数))
+
+- 写法说明：
+  全匹配方式：
+
+  ```
+  public void com.xxx.service.impl.XXXServiceImpl.saveXXX(com.xxx.domain.XXX)
+  ```
+
+  访问修饰符可以省略
+
+  ```
+  void com.xxx.service.impl.XXXServiceImpl.saveXXX(com.xxx.domain.XXX)
+  ```
+
+  返回值可以使用\*号，表示任意返回值
+
+  ```
+  * com.xxx.service.impl.XXXServiceImpl.saveXXX(com.xxx.domain.XXX)
+  ```
+
+  包名可以使用\*号，表示任意包，但是有几级包，需要写几个\*
+
+  ```
+  * *.*.*.*.XXXServiceImpl.saveXXX(com.xxx.domain.XXX)
+  ```
+
+  使用..来表示当前包，及其子包
+
+  ```
+  * com..XXXServiceImpl.saveXXX(com.xxx.domain.XXX)
+  ```
+
+  类名可以使用\*号，表示任意类
+
+  ```
+  * com..*.saveXXX(com.xxx.domain.XXX)
+  ```
+
+  方法名可以使用\*号，表示任意方法
+
+  ```
+  * com..*.*( com.xxx.domain.XXX)
+  ```
+
+  参数列表可以使用\*，表示参数可以是任意数据类型，但是必须有参数
+
+  ```
+  * com..*.*(*)
+  ```
+
+  参数列表可以使用..表示有无参数均可，有参数可以是任意类型
+
+  ```
+  * com..*.*(..)
+  ```
+
+  全通配方式：
+
+  ```
+  * *..*.*(..)
+  ```
+
+- 注：通常情况下，我们都是对业务层的方法进行增强，所以切入点表达式都是切到业务层实现类。
+
+  execution(\* com.xxx.service.impl.\*.\*(..))
+
+#### 基于注解的 AOP 配置
 
 ## spring 中的 jdbcTemplate 以及 Spring 事务控制
